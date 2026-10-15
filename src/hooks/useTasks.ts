@@ -1,13 +1,13 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useFocusEffect } from 'expo-router';
-import {
-  getTasks,
-  createTask as repositoryCreateTask,
-  updateTask as repositoryUpdateTask,
-  toggleTaskComplete as repositoryToggleTaskComplete,
-  deleteTask as repositoryDeleteTask,
-} from '../database/taskRepository';
-import { Task, TaskFilter, CreateTaskInput, UpdateTaskInput } from '../types/task';
+import * as TaskRepository from '../database/taskRepository';
+import { Task, TaskFilter } from '../types/task';
+
+export interface TaskCounters {
+  total: number;
+  pending: number;
+  completed: number;
+}
 
 export function useTasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -15,24 +15,33 @@ export function useTasks() {
   const [loading, setLoading] = useState<boolean>(true);
 
   const loadTasks = useCallback(async () => {
-    setLoading(true);
     try {
-      const fetchedTasks = await getTasks();
-      setTasks(fetchedTasks);
+      setLoading(true);
+      const data = await TaskRepository.getTasks();
+      setTasks(data);
     } catch (error) {
-      console.error('Error loading tasks:', error);
+      console.error('Erro ao carregar tarefas:', error);
     } finally {
       setLoading(false);
     }
   }, []);
 
+  useFocusEffect(
+    useCallback(() => {
+      loadTasks();
+    }, [loadTasks])
+  );
+
   const toggleTask = useCallback(
-    async (id: number, completed?: boolean | number) => {
+    async (id: number, currentCompleted?: number) => {
       try {
-        await repositoryToggleTaskComplete(id, completed);
+        await TaskRepository.toggleTaskComplete(
+          id,
+          currentCompleted !== undefined ? (currentCompleted === 1 ? 0 : 1) : undefined
+        );
         await loadTasks();
       } catch (error) {
-        console.error('Error toggling task:', error);
+        console.error('Erro ao alternar status da tarefa:', error);
       }
     },
     [loadTasks]
@@ -41,62 +50,26 @@ export function useTasks() {
   const removeTask = useCallback(
     async (id: number) => {
       try {
-        await repositoryDeleteTask(id);
+        await TaskRepository.deleteTask(id);
         await loadTasks();
       } catch (error) {
-        console.error('Error removing task:', error);
+        console.error('Erro ao remover tarefa:', error);
       }
     },
     [loadTasks]
-  );
-
-  const addTask = useCallback(
-    async (input: CreateTaskInput) => {
-      try {
-        const newTask = await repositoryCreateTask(input);
-        await loadTasks();
-        return newTask;
-      } catch (error) {
-        console.error('Error adding task:', error);
-        throw error;
-      }
-    },
-    [loadTasks]
-  );
-
-  const updateTask = useCallback(
-    async (input: UpdateTaskInput) => {
-      try {
-        const updated = await repositoryUpdateTask(input);
-        await loadTasks();
-        return updated;
-      } catch (error) {
-        console.error('Error updating task:', error);
-        throw error;
-      }
-    },
-    [loadTasks]
-  );
-
-  useFocusEffect(
-    useCallback(() => {
-      loadTasks();
-    }, [loadTasks])
   );
 
   const filteredTasks = useMemo(() => {
-    switch (filter) {
-      case 'pending':
-        return tasks.filter((t) => t.completed === 0);
-      case 'completed':
-        return tasks.filter((t) => t.completed === 1);
-      case 'all':
-      default:
-        return tasks;
+    if (filter === 'pending') {
+      return tasks.filter((task) => task.completed === 0);
     }
+    if (filter === 'completed') {
+      return tasks.filter((task) => task.completed === 1);
+    }
+    return tasks;
   }, [tasks, filter]);
 
-  const counters = useMemo(() => {
+  const counters: TaskCounters = useMemo(() => {
     const total = tasks.length;
     const pending = tasks.filter((t) => t.completed === 0).length;
     const completed = tasks.filter((t) => t.completed === 1).length;
@@ -112,12 +85,8 @@ export function useTasks() {
     loadTasks,
     toggleTask,
     removeTask,
-    deleteTask: removeTask,
-    addTask,
-    createTask: addTask,
-    updateTask,
     counters,
-    totalCount: counters.total,
+    allTasksCount: counters.total,
     pendingCount: counters.pending,
     completedCount: counters.completed,
   };
