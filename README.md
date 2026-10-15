@@ -1,39 +1,50 @@
-# 📝 Meu Lista de Tarefas
+# 📋 Minhas Tarefas (To-Do List)
 
-Aplicativo móvel desenvolvido para acompanhamento e entregas da disciplina de Programação Mobile do curso de Análise e Desenvolvimento de Sistemas (FATEC).
+## 📖 Sobre o Projeto
+Aplicativo mobile desenvolvido para o gerenciamento de tarefas diárias. O sistema permite ao usuário adicionar, editar, excluir e marcar tarefas como concluídas, organizando a rotina de forma eficiente. O app conta com filtros dinâmicos integrados para visualização (Todas, Pendentes e Concluídas) e garante a persistência completa dos dados localmente no dispositivo.
 
-## Tecnologias Utilizadas
+O desenvolvimento focou em boas práticas de engenharia de software, implementando a separação de responsabilidades com o **Repository Pattern**, isolamento de regras de negócio em **Custom Hooks** e tipagem estrita.
 
-O projeto foi estruturado com as tecnologias e bibliotecas mais modernas do ecossistema mobile:
+## 🚀 Tecnologias Utilizadas
+- **React Native & Expo:** Framework principal (SDK 57).
+- **Expo Router:** Navegação em pilha (Stack) baseada no sistema de arquivos.
+- **SQLite (`expo-sqlite`):** Banco de dados local configurado com Singleton e modo WAL (Write-Ahead Log) para alta performance de escrita.
+- **NativeWind (Tailwind CSS v4):** Estilização de interface totalmente baseada em classes utilitárias.
+- **TypeScript:** Tipagem estrita de entidades, propriedades (props) e DTOs, sem uso de `any`.
 
-* **React Native** (com framework **Expo SDK 57**)
-* **TypeScript** para tipagem estática e segurança do código
-* **NativeWind** (TailwindCSS) para estilização utilitária
-* **Expo SQLite** para persistência de dados local
-* **Expo Router** para navegação baseada em arquivos
+## ✨ Funcionalidades Implementadas
+- [x] **CRUD Completo:** Cadastro (com título obrigatório e descrição opcional), leitura, edição e exclusão de tarefas.
+- [x] **Gestão de Estado Centralizada:** Uso do hook customizado `useTasks` com `useFocusEffect` e `useCallback` para manter os dados da interface sempre sincronizados com o banco de dados.
+- [x] **Filtros e Contadores Dinâmicos:** Barra de navegação que filtra as tarefas em tempo real (Todas, Pendentes, Concluídas) e exibe as quantidades atualizadas.
+- [x] **Design Seguro (UX):** Emissão de alerta de confirmação (`Alert.alert`) antes da exclusão de qualquer registro, prevenindo toques acidentais.
+- [x] **Persistência Comprovada:** O banco SQLite retém com segurança todos os estados (concluídas/pendentes) mesmo após o encerramento total do aplicativo em background.
 
-  ## Status do Desenvolvimento
-
-O aplicativo está sendo construído em etapas. Até o momento, o *core* da aplicação e a camada de dados foram finalizados:
-
-- [x] **Etapas 1 a 4:** Configuração inicial do projeto, instalação de dependências, setup do Expo Router e configuração global do NativeWind.
-- [x] **Etapa 5:** Criação das interfaces e tipagens em TypeScript (`Task`, `CreateTaskInput`, etc).
-- [x] **Etapas 6 e 7:** Implementação do banco de dados local com SQLite (utilizando modo WAL para performance) e isolamento das operações CRUD no `taskRepository.ts`.
-- [x] **Etapa 8:** Criação do hook customizado `useTasks.ts` para gerenciar os estados, filtros e contadores das tarefas (utilizando `useCallback` e `useFocusEffect`).
-- [x] **UI Temporária:** Tela inicial de "Em construção" centralizada e estilizada com NativeWind.
+## 📁 Arquitetura e Estrutura
+- `app/`: Telas e rotas principais (`_layout.tsx`, `index.tsx`, `form.tsx`).
+- `src/components/`: Componentes visuais desacoplados (`TaskItem.tsx`, `FilterBar.tsx`, `EmptyState.tsx`).
+- `src/hooks/`: Lógica de gerenciamento de estado da interface e chamadas ao banco (`useTasks.ts`).
+- `src/database/`: Regras de persistência sem dependência do React (`database.ts`, `taskRepository.ts`).
+- `src/types/`: Interfaces de contrato (`task.ts`).
 
 ##  Demonstração
 
 Abaixo estão algumas capturas de tela do aplicativo rodando nativamente no dispositivo físico através do Expo Go:
 
 <p align="center">
-  <img width="360" height="800" alt="image" src="https://github.com/user-attachments/assets/6e17ab88-e432-4ec6-ac9a-ed6e934dea6b" width="250" />
-  <img width="360" height="800" alt="image" src="https://github.com/user-attachments/assets/9dafaa55-109a-412b-8380-4637c4727aef" width="250" />
-  <img width="360" height="800" alt="image" src="https://github.com/user-attachments/assets/e16ddf93-c681-4cfe-ae36-daed459a9c60" width="250" />
+  
 
-  * **Tela temporária para mudar um pouquinho ;)**
-  <img width="360" height="911" alt="image" src="https://github.com/user-attachments/assets/5b108621-5b96-4b65-8b92-ebb9632bcf3a" />
+https://github.com/user-attachments/assets/70efef7d-7d1b-4415-9d0f-d1c2f4e69beb
 
+-Tela de Cadastro.
+-Listagem de Tarefas.
+-Exclusão com Confirmação.
+-Edição de Tarefa.
+
+<img width="391" height="869" alt="image" src="https://github.com/user-attachments/assets/4298b529-76e3-4e76-bc30-0ed87ec02b31" width="250" />
+<img width="391" height="869" alt="image" src="https://github.com/user-attachments/assets/73a1ba81-0e45-4670-8161-24eff9c7a939" width="250" />
+<img width="391" height="869" alt="image" src="https://github.com/user-attachments/assets/70a6fb2c-f234-4f8a-8cef-a9f38692a5b1" width="250" />
+<img width="391" height="869" alt="image" src="https://github.com/user-attachments/assets/f4f85db7-3c81-4088-b4c1-789d8aab5dbf" width="250" />
+<img width="391" height="869" alt="image" src="https://github.com/user-attachments/assets/a76c5962-627c-4d47-98ff-b481aaaa92d3" width="250" />
 
 </p>
 
