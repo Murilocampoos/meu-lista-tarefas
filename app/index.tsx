@@ -1,13 +1,15 @@
 import React from 'react';
-import { View, FlatList, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
-import { useRouter } from 'expo-router';
+import { View, FlatList, TouchableOpacity, Text, ActivityIndicator, Image } from 'react-native';
+import { useRouter, Stack } from 'expo-router';
 import { useTasks } from '../src/hooks/useTasks';
+import { useProfile } from '../src/hooks/useProfile';
 import { FilterBar } from '../src/components/FilterBar';
 import { TaskItem } from '../src/components/TaskItem';
 import { EmptyState } from '../src/components/EmptyState';
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { profile } = useProfile();
   const {
     tasks,
     filter,
@@ -21,7 +23,37 @@ export default function HomeScreen() {
   } = useTasks();
 
   return (
-    <View className="flex-1 bg-gray-100">
+    <>
+      <Stack.Screen
+        options={{
+          headerRight: () => (
+            <TouchableOpacity
+              onPress={() => router.push('/profile')}
+              accessibilityLabel="Abrir perfil"
+              accessibilityRole="button"
+              className="mr-2 items-center justify-center"
+              activeOpacity={0.7}
+            >
+              {profile?.photoUri ? (
+                <Image
+                  source={{ uri: profile.photoUri }}
+                  style={{ width: 36, height: 36, borderRadius: 18, borderWidth: 2, borderColor: '#ffffff' }}
+                  className="w-9 h-9 rounded-full border-2 border-white"
+                  resizeMode="cover"
+                />
+              ) : (
+                <View
+                  style={{ width: 36, height: 36, borderRadius: 18 }}
+                  className="w-9 h-9 rounded-full bg-white/20 items-center justify-center border border-white/40"
+                >
+                  <Text className="text-xl">👤</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          ),
+        }}
+      />
+      <View className="flex-1 bg-gray-100">
       <FilterBar
         currentFilter={filter}
         onFilterChange={setFilter}
@@ -60,5 +92,6 @@ export default function HomeScreen() {
         <Text className="text-white text-3xl font-light mb-1">+</Text>
       </TouchableOpacity>
     </View>
+    </>
   );
 }

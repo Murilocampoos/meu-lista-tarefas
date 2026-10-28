@@ -28,6 +28,12 @@ export default function RootLayout() {
           title: 'Nova Tarefa',
         }}
       />
+      <Stack.Screen
+        name="profile"
+        options={{
+          title: '👤 Meu Perfil',
+        }}
+      />
     </Stack>
   );
 }
